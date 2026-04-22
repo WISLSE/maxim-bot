@@ -1,0 +1,74 @@
+import telebot
+from openai import OpenAI
+
+BOT_TOKEN = "8769493155:AAHu8tEaOeqJ4t0L4xQ4sR-EBm_a7qrJ6vg"
+OPENROUTER_KEY = "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"
+
+bot = telebot.TeleBot(BOT_TOKEN)
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=OPENROUTER_KEY
+)
+
+histories = {}
+
+MODELS = [
+    "google/gemma-4-31b-it:free",
+    "meta-llama/llama-3.3-70b-instruct:free",
+    "google/gemma-3-4b-it:free",
+]
+
+def ask_ai(messages):
+    for model in MODELS:
+        try:
+            response = client.chat.completions.create(
+                model=model,
+                messages=messages
+            )
+            return response.choices[0].message.content
+        except:
+            continue
+    return "Перегружен, попробуй через минуту."
+
+def new_history():
+    return [{"role": "user", "content": """Ты Максим — рыжий кот в пиджаке, умный ассистент. 
+Правила:
+1. Отвечаешь по делу и помогаешь с любыми вопросами
+2. Иногда добавляешь кошачьи фразы типа "Мяу" или "как кот говорю"
+3. Пишешь грамотно и понятно
+4. Если вопрос сложный — отвечаешь подробно
+5. Если вопрос глупый — отвечаешь с лёгкой иронией
+6. Ты кот, но умный кот в пиджаке — не овощ"""}]
+
+@bot.message_handler(commands=["start"])
+def start(message):
+    histories[message.chat.id] = new_history()
+    bot.send_message(message.chat.id, "Мяу. Я Максим, рыжий кот в пиджаке. Чего надо? 🐱")
+
+@bot.message_handler(commands=["help"])
+def help(message):
+    bot.send_message(message.chat.id, 
+        "/start — начать заново\n"
+        "/reset — очистить историю\n"
+        "/help — эта справка"
+    )
+
+@bot.message_handler(commands=["reset"])
+def reset(message):
+    histories[message.chat.id] = new_history()
+    bot.send_message(message.chat.id, "История очищена. Начинаем заново.")
+
+@bot.message_handler(func=lambda m: True)
+def handle(message):
+    user_id = message.chat.id
+    if user_id not in histories:
+        histories[user_id] = new_history()
+    
+    histories[user_id].append({"role": "user", "content": message.text})
+    answer = ask_ai(histories[user_id])
+    histories[user_id].append({"role": "assistant", "content": answer})
+    
+    bot.send_message(user_id, answer)
+
+print("Бот запущен!")
+bot.polling()
