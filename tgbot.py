@@ -1,3 +1,4 @@
+import time
 import os
 import telebot
 from openai import OpenAI
@@ -45,12 +46,15 @@ def ask_ai(messages):
         try:
             response = client.chat.completions.create(
                 model=model,
-                messages=messages
+                messages=messages,
+                timeout=15
             )
             return response.choices[0].message.content
-        except:
+        except Exception as e:
+            print(f"Модель {model} не ответила: {e}")
+            time.sleep(2)
             continue
-    return "Перегружен, попробуй через минуту."
+    return "Все серверы заняты, попробуй через минуту. Мяу."
 
 def new_history():
     return [{"role": "user", "content": """Ты Максим — рыжий кот в пиджаке, умный ассистент. 
