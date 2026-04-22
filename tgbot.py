@@ -83,6 +83,8 @@ def reset(message):
 @bot.message_handler(func=lambda m: True)
 def handle(message):
     user_id = message.chat.id
+    print(f"Получено сообщение от {user_id}: {message.text}")
+    
     if user_id not in histories:
         histories[user_id] = new_history()
     
@@ -90,6 +92,7 @@ def handle(message):
     answer = ask_ai(histories[user_id])
     histories[user_id].append({"role": "assistant", "content": answer})
     
+    print(f"Ответ: {answer}")
     bot.send_message(user_id, answer)
 
 print("Бот запущен!")
