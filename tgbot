@@ -1,8 +1,9 @@
+import os
 import telebot
 from openai import OpenAI
 
-BOT_TOKEN = "8769493155:AAHu8tEaOeqJ4t0L4xQ4sR-EBm_a7qrJ6vg"
-OPENROUTER_KEY = "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"
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
+OPENROUTER_KEY = os.environ.get("OPENROUTER_KEY")
 
 bot = telebot.TeleBot(BOT_TOKEN)
 client = OpenAI(
