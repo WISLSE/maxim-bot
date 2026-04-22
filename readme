@@ -15,4 +15,4 @@ Telegram бот с характером на базе ИИ.
 - LLM модели (Llama, Gemma)
 
 ## Автор
-github.com/твой_ник
+github.com/WISLSE
