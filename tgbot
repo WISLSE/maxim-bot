@@ -14,8 +14,12 @@ histories = {}
 
 MODELS = [
     "google/gemma-4-31b-it:free",
+    "google/gemma-4-26b-a4b-it:free",
     "meta-llama/llama-3.3-70b-instruct:free",
+    "meta-llama/llama-3.2-3b-instruct:free",
     "google/gemma-3-4b-it:free",
+    "liquid/lfm-2.5-1.2b-instruct:free",
+    "google/gemma-3-12b-it:free",
 ]
 
 def ask_ai(messages):
